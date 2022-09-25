@@ -35,8 +35,8 @@ namespace CUETools.Codecs.Flake
 
 		public static readonly int[] flac_samplerates = new int[16] {
 				0, 88200, 176400, 192000,
-				8000, 16000, 22050, 24000, 32000, 44100, 48000, 96000,
-				0, 0, 0, 0
+				8000, 16000, 22050, 24000, 32000, 44100, 48000, 96000, 40000,
+				0, 0, 0
 			};
         //1100 : get 8 bit sample rate (in kHz) from end of header
         //1101 : get 16 bit sample rate (in Hz) from end of header

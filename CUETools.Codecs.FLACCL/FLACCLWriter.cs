@@ -52,7 +52,7 @@ namespace CUETools.Codecs.FLACCL
         public int Priority => 2;
 
         [Browsable(false)]
-        public string SupportedModes => this.AllowNonSubset || (this.PCM != null && this.PCM.SampleRate > 48000) ? "0 1 2 3 4 5 6 7 8 9 10 11" : "0 1 2 3 4 5 6 7 8";
+        public string SupportedModes => this.AllowNonSubset || (this.PCM != null && this.PCM.SampleRate > 48000) ? "0 1 2 3 4 5 6 7 8 9 10 11 12" : "0 1 2 3 4 5 6 7 8";
 
         [Browsable(false)]
         public string DefaultMode => "8";
@@ -891,7 +891,7 @@ namespace CUETools.Codecs.FLACCL
             frame.writer.writebits(15, 0x7FFC);
             frame.writer.writebits(1, eparams.variable_block_size > 0 ? 1 : 0);
             frame.writer.writebits(4, frame.bs_code0);
-            frame.writer.writebits(4, sr_code0);
+            frame.writer.writebits(4, 0000);
             if (frame.ch_mode == ChannelMode.NotStereo)
                 frame.writer.writebits(4, ch_code);
             else
@@ -2230,7 +2230,7 @@ namespace CUETools.Codecs.FLACCL
             ch_code = channels - 1;
 
             // find samplerate in table
-            for (i = 1; i < 12; i++)
+            for (i = 1; i < 13; i++)
             {
                 if (m_settings.PCM.SampleRate == FlakeConstants.flac_samplerates[i])
                 {
@@ -2240,7 +2240,7 @@ namespace CUETools.Codecs.FLACCL
             }
 
             // if not in table, samplerate is non-standard
-            if (i == 12)
+            if (i == 13)
                 throw new Exception("non-standard samplerate");
 
             for (i = 1; i < 8; i++)

@@ -88,7 +88,7 @@ namespace CUETools.FLACCL.cmd
 			string device_type = null;
             int min_precision = -1, max_precision = -1,
                 orders_per_window = -1, orders_per_channel = -1;
-			int input_len = 4096, input_val = 0, input_bps = 16, input_ch = 2, input_rate = 44100;
+			int input_len = 4096, input_val = 0, input_bps = 16, input_ch = 2, input_rate = 40000;
 			int level = -1, vbr_mode = -1;
 			bool do_seektable = true;
 			bool estimate_window = false;
