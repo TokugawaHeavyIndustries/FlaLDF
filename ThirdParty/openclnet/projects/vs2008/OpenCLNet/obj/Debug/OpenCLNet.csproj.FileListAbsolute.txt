@@ -1,0 +1,35 @@
+C:\src\openclnet\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\src\openclnet\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\src\openclnet\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\src\openclnet\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\src\openclnet\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\src\sourceforge\openclnet\trunk\source\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\src\sourceforge\openclnet\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\src\sourceforge\openclnet\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\src\sourceforge\openclnet\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\src\sourceforge\openclnet\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\Users\olk\src\openclnet\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\Users\olk\src\openclnet\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\Users\olk\src\openclnet\trunk\source\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\olk\src\openclnet\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\Users\olk\src\openclnet\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\Users\olk\src\openclnet2\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\Users\olk\src\openclnet2\trunk\source\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\Users\olk\src\openclnet2\trunk\source\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\olk\src\openclnet2\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\Users\olk\src\openclnet2\trunk\source\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\blahblah\source\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\olk\Documents\src\blahblah\source\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\blahblah\source\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\blahblah\source\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\blahblah\source\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\OpenCL.Net 0.5 svn\source\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\OpenCL.Net 0.5 svn\source\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\OpenCL.Net 0.5 svn\source\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\olk\Documents\src\OpenCL.Net 0.5 svn\source\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\OpenCL.Net 0.5 svn\source\OpenCLNet\obj\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\openclnet_v1\projects\vs2008\OpenCLNet\bin\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\openclnet_v1\projects\vs2008\OpenCLNet\bin\Debug\OpenCLNet.pdb
+C:\Users\olk\Documents\src\openclnet_v1\projects\vs2008\OpenCLNet\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\olk\Documents\src\openclnet_v1\projects\vs2008\OpenCLNet\obj\Debug\OpenCLNet.dll
+C:\Users\olk\Documents\src\openclnet_v1\projects\vs2008\OpenCLNet\obj\Debug\OpenCLNet.pdb

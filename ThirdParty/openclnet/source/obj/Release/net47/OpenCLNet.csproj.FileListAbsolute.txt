@@ -1,0 +1,9 @@
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\bin\Release\net47\OpenCLNet.dll
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\bin\Release\net47\OpenCLNet.pdb
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.csproj.AssemblyReference.cache
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.AssemblyInfoInputs.cache
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.AssemblyInfo.cs
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.csproj.CoreCompileInputs.cache
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.dll
+C:\Users\Matt\Desktop\test\ThirdParty\openclnet\source\obj\Release\net47\OpenCLNet.pdb
