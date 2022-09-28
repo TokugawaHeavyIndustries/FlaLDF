@@ -1,4 +1,9 @@
-CUETools.Codecs.FLACCL\obj\
+CUETools.Codecs.FLACCL/obj/
+CUETools.Codecs/obj/
+CUETools.Codecs.Flake/obj/
+CUETools.FLACCL.cmd/obj/
+
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -24,3 +29,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.editorconfig
+ThirdParty/openclnet/source/obj/Debug/net47/OpenCLNet.csproj.FileListAbsolute.txt
+ThirdParty/openclnet/source/obj/Release/net47/OpenCLNet.pdb

@@ -29,6 +29,7 @@ using CUETools.Codecs;
 using CUETools.Codecs.Flake;
 using OpenCLNet;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace CUETools.Codecs.FLACCL
 {
@@ -1860,7 +1861,11 @@ namespace CUETools.Codecs.FLACCL
 
                 try
                 {
-                    openCLProgram = OCLMan.CompileFile("flac.cl");
+                    //Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("CUETools.Codecs.FLACCL.flac.cl");
+                    //string[] pot;
+                    //pot = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("CUETools.Codecs.FLACCL.flac.cl").ToString;
+                    // openCLProgram = OCLMan.CompileFile(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("CUETools.Codecs.FLACCL.flac.cl"));
+                    openCLProgram = OCLMan.CompileFile();
                 }
                 catch (OpenCLBuildException ex)
                 {
