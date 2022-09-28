@@ -2,6 +2,10 @@ CUETools.Codecs.FLACCL/obj/
 CUETools.Codecs/obj/
 CUETools.Codecs.Flake/obj/
 CUETools.FLACCL.cmd/obj/
+.vs/
+bin/
+ThirdParty/openclnet/projects/vs2008/OpenCLNet/obj/Debug/
+ThirdParty/openclnet/projects/vs2008/OpenCLNet/obj/Release/
 
 
 ### Windows ###
