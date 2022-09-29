@@ -4,7 +4,7 @@ CUDA-accelerated FLAC encoder modified for Laserdisc RF files
 # Building
 
 1) Install IDE and dependencies:  
-1a) Microsoft Visual Studio 2017 or newer (.NET Desktop Development option)
+1a) Microsoft Visual Studio 2017 or newer (.NET Desktop Development option)  
 1b) Microsoft Visual Studio Installer Projects  
 1c) .NET Framework 4.7 and .NET Core 2.0 are required (more possible later)  
 1d) Ensure .NET Framework 3.5 is enabled in Windows Optional Features
