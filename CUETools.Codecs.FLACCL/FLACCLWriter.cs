@@ -2062,7 +2062,7 @@ namespace CUETools.Codecs.FLACCL
             get
             {
                 var version = typeof(AudioEncoder).Assembly.GetName().Version;
-                return vendor_string ?? "CUETools FLACCL " + version.Major + "." + version.Minor + "." + version.Build;
+                return vendor_string ?? "FlaLDF " + version.Major + "." + version.Minor + "." + version.Build;
             }
             set
             {

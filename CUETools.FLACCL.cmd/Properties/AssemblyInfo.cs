@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CUETools.FLACCL.cmd")]
+[assembly: AssemblyTitle("FlaLDF")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CUETools.FLACCL.cmd")]
-[assembly: AssemblyCopyright("Copyright © 2008-2022 Grigory Chudov")]
+[assembly: AssemblyProduct("FlaLDF")]
+[assembly: AssemblyCopyright("Copyright © 2009-2022 Grigory Chudov, downstream changes Copyright © 2022 Matthew Perry")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2.2.2.0")]
-[assembly: AssemblyFileVersion("2.2.2.0")]
+[assembly: AssemblyVersion("0.1")]
+[assembly: AssemblyFileVersion("0.1")]  //note this should be unused
