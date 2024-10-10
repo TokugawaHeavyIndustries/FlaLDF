@@ -69,6 +69,17 @@ namespace CUETools.Codecs.FLACCL
         [Browsable(false)]
         public int BlockSize { get; set; }
 
+ 	//these are new between here and below comment
+	[Browsable(false)]
+        public int SampleRate { get; set; }
+
+        [Browsable(false)]
+        public int BitsPerSample { get; set; }
+
+        [Browsable(false)]
+        public int ChannelCount { get; set; }
+	//end new section
+
         [Browsable(false)]
         [DefaultValue(4096)]
         public int Padding { get; set; }
@@ -102,6 +113,16 @@ namespace CUETools.Codecs.FLACCL
 
         public void Validate()
         {
+		//new between here and below
+ 	    if (SampleRate <= 0)
+                throw new Exception("Invalid sample rate");
+
+            if (BitsPerSample != 16 && BitsPerSample != 24)
+                throw new Exception("Bits per sample must be 16 or 24");
+		//end new
+
+            if (ChannelCount < 1 || ChannelCount > 2)
+                throw new Exception("Channel count must be 1 or 2");
             if (this.GetEncoderModeIndex() < 0)
                 throw new Exception("unsupported encoder mode");
             if (OpenCL.NumberOfPlatforms < 1)
@@ -378,14 +399,12 @@ namespace CUETools.Codecs.FLACCL
             m_settings = settings.Clone() as EncoderSettings;
             m_settings.Validate();
 
-            // FIXME: For now, only 16-bit encoding is supported
-            if (Settings.PCM.BitsPerSample != 16 && Settings.PCM.BitsPerSample != 24)
-                throw new Exception("Bits per sample must be 16.");
-            //if (pcm.ChannelCount != 2)
-            //    throw new Exception("ChannelCount must be 2.");
+            //changes here down
 
-            channels = Settings.PCM.ChannelCount;
-            bits_per_sample = (uint)Settings.PCM.BitsPerSample;
+ 	    channels = m_settings.ChannelCount;
+            bits_per_sample = (uint)m_settings.BitsPerSample;
+
+    	    //end changes
 
             // flake_validate_params
 
@@ -1922,7 +1941,7 @@ namespace CUETools.Codecs.FLACCL
             }
         }
 
-        public unsafe void Write(AudioBuffer buff)
+public unsafe void Write(AudioBuffer buff)
         {
             InitTasks();
             buff.Prepare(this);
@@ -2651,6 +2670,26 @@ namespace CUETools.Codecs.FLACCL
                 }
             }
 
+	    // Update kernel arguments to include sample rate and bits per sample
+            clStereoDecorr.SetArgs(
+                clSamples,
+                clSamplesBytes,
+                channelSize1,
+                writer.Settings.PCM.BitsPerSample);
+
+            clChannelDecorr2.SetArgs(
+                clSamples,
+                clSamplesBytes,
+                channelSize,
+                writer.Settings.PCM.BitsPerSample);
+
+            clChannelDecorrX.SetArgs(
+                clSamples,
+                clSamplesBytes,
+                channelSize,
+                writer.Settings.PCM.BitsPerSample,
+                writer.Settings.PCM.ChannelCount);
+
             samplesBuffer = new int[MAX_CHANNELSIZE * channelsCount];
             outputBuffer = new byte[max_frame_size * MAX_FRAMES + 1];
             frame = new FlacFrame(channelsCount);
@@ -2802,7 +2841,8 @@ namespace CUETools.Codecs.FLACCL
                 clChannelDecorr.SetArgs(
                     clSamples,
                     clSamplesBytes,
-                    channelSize1);
+                    channelSize1
+		    writer.Settings.PCM.BitsPerSample);
 
                 openCLCQ.EnqueueNDRangeKernel(
                     clChannelDecorr,
@@ -2817,7 +2857,9 @@ namespace CUETools.Codecs.FLACCL
                 clChannelDecorrX.SetArgs(
                     clSamples,
                     clSamplesBytes,
-                    channelSize);
+                    channelSize
+		    writer.Settings.PCM.BitsPerSample,
+                    writer.Settings.PCM.ChannelCount);
 
                 openCLCQ.EnqueueNDRangeKernel(
                     clChannelDecorrX,
