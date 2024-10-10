@@ -59,13 +59,9 @@
 #define ZEROFD 0.0f
 #endif
 
-#if BITS_PER_SAMPLE > 16
+// Remove the fixed BITS_PER_SAMPLE checks and use a function parameter instead
 #define MAX_RICE_PARAM 30
 #define RICE_PARAM_BITS 5
-#else
-#define MAX_RICE_PARAM 14
-#define RICE_PARAM_BITS 4
-#endif
 
 typedef enum
 {
@@ -127,17 +123,25 @@ __kernel void clWindowTukey(__global float* window, int windowOffset, float p)
 }
 #endif
 
-#if BITS_PER_SAMPLE > 16
 __kernel void clStereoDecorr(
     __global int *samples,
     __global unsigned char *src,
-    int offset
+    int offset,
+    int bits_per_sample
 )
 {
     int pos = get_global_id(0);
-    int bpos = pos * 6;
-    int x = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> 8;
-    int y = (((int)src[bpos+3] << 8) | ((int)src[bpos+4] << 16) | ((int)src[bpos+5] << 24)) >> 8;
+    int bpos = pos * (bits_per_sample / 4);
+    int x, y;
+    
+    if (bits_per_sample > 16) {
+        x = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> (32 - bits_per_sample);
+        y = (((int)src[bpos+3] << 8) | ((int)src[bpos+4] << 16) | ((int)src[bpos+5] << 24)) >> (32 - bits_per_sample);
+    } else {
+        x = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16)) >> (24 - bits_per_sample);
+        y = (((int)src[bpos+2] << 8) | ((int)src[bpos+3] << 16)) >> (24 - bits_per_sample);
+    }
+    
     samples[pos] = x;
     samples[1 * offset + pos] = y;
     samples[2 * offset + pos] = (x + y) >> 1;
@@ -147,28 +151,42 @@ __kernel void clStereoDecorr(
 __kernel void clChannelDecorr2(
     __global int *samples,
     __global unsigned char *src,
-    int offset
+    int offset,
+    int bits_per_sample
 )
 {
     int pos = get_global_id(0);
-    int bpos = pos * 6;
-    samples[pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> 8;
-    samples[offset + pos] = (((int)src[bpos+3] << 8) | ((int)src[bpos+4] << 16) | ((int)src[bpos+5] << 24)) >> 8;
+    int bpos = pos * (bits_per_sample / 4);
+    
+    if (bits_per_sample > 16) {
+        samples[pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> (32 - bits_per_sample);
+        samples[offset + pos] = (((int)src[bpos+3] << 8) | ((int)src[bpos+4] << 16) | ((int)src[bpos+5] << 24)) >> (32 - bits_per_sample);
+    } else {
+        samples[pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16)) >> (24 - bits_per_sample);
+        samples[offset + pos] = (((int)src[bpos+2] << 8) | ((int)src[bpos+3] << 16)) >> (24 - bits_per_sample);
+    }
 }
 
 __kernel void clChannelDecorrX(
     __global int *samples,
     __global unsigned char *src,
-    int offset
+    int offset,
+    int bits_per_sample,
+    int channels
 )
 {
     int pos = get_global_id(0);
-    for (int ch = 0; ch < MAX_CHANNELS; ch++)
+    for (int ch = 0; ch < channels; ch++)
     {
-	int bpos = 3 * (pos * MAX_CHANNELS + ch);
-	samples[offset * ch + pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> 8;
+        int bpos = (bits_per_sample / 8) * (pos * channels + ch);
+        if (bits_per_sample > 16) {
+            samples[offset * ch + pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16) | ((int)src[bpos+2] << 24)) >> (32 - bits_per_sample);
+        } else {
+            samples[offset * ch + pos] = (((int)src[bpos] << 8) | ((int)src[bpos+1] << 16)) >> (24 - bits_per_sample);
+        }
     }
 }
+
 #else
 __kernel void clStereoDecorr(
     __global int4 *samples,
@@ -1738,31 +1756,35 @@ void clFindRiceParameter(
 // Finds optimal rice parameter for each partition.
 // get_group_id(0) == task index
 __kernel __attribute__((reqd_work_group_size(GROUP_SIZE, 1, 1)))
-void clFindRiceParameter(
+__kernel void clFindRiceParameter(
     __global FLACCLSubframeTask *tasks,
     __global int* rice_parameters,
     __global uint* partition_lengths,
-    int max_porder
-    )
+    int max_porder,
+    int bits_per_sample
+)
 {
+    int max_rice_param = (bits_per_sample > 16) ? 30 : 14;
+    
     for (int offs = get_local_id(0); offs < (2 << max_porder); offs += GROUP_SIZE)
     {
-	const int pos = ((MAX_RICE_PARAM + 1) << (max_porder + 1)) * get_group_id(0) + offs;
-	uint best_l = partition_lengths[pos];
-	int best_k = 0;
-	for (int k = 1; k <= MAX_RICE_PARAM; k++)
-	{
-	    uint l = partition_lengths[pos + (k << (max_porder + 1))];
-	    best_k = select(best_k, k, l < best_l);
-	    best_l = min(best_l, l);
-	}
+        const int pos = ((MAX_RICE_PARAM + 1) << (max_porder + 1)) * get_group_id(0) + offs;
+        uint best_l = partition_lengths[pos];
+        int best_k = 0;
+        for (int k = 1; k <= max_rice_param; k++)
+        {
+            uint l = partition_lengths[pos + (k << (max_porder + 1))];
+            best_k = select(best_k, k, l < best_l);
+            best_l = min(best_l, l);
+        }
 
-	// output rice parameter
-	rice_parameters[(get_group_id(0) << (max_porder + 2)) + offs] = best_k;
-	// output length
-	rice_parameters[(get_group_id(0) << (max_porder + 2)) + (1 << (max_porder + 1)) + offs] = best_l;
+        // output rice parameter
+        rice_parameters[(get_group_id(0) << (max_porder + 2)) + offs] = best_k;
+        // output length
+        rice_parameters[(get_group_id(0) << (max_porder + 2)) + (1 << (max_porder + 1)) + offs] = best_l;
     }
 }
+
 #endif
 
 #ifdef FLACCL_CPU
@@ -1982,49 +2004,67 @@ void clCalcOutputOffsets(
 #else
 // get_global_id(0) * channels == task index
 __kernel __attribute__((reqd_work_group_size(32, 1, 1)))
-void clCalcOutputOffsets(
+__kernel void clCalcOutputOffsets(
     __global int *residual,
     __global int *samples,
     __global FLACCLSubframeTask *tasks,
-    int channels1,
+    int channels,
     int frameCount,
-    int firstFrame
-    )
+    int firstFrame,
+    int sample_rate,
+    int bits_per_sample
+)
 {
     __local FLACCLSubframeData ltasks[MAX_CHANNELS];
     __local volatile int mypos[MAX_CHANNELS];
     int offset = 0;
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-	if (get_local_id(0) < sizeof(ltasks[0]) / sizeof(int))
-	    for (int ch = 0; ch < MAX_CHANNELS; ch++)
-		((__local int*)&ltasks[ch])[get_local_id(0)] = ((__global int*)(&tasks[iFrame * MAX_CHANNELS + ch]))[get_local_id(0)];
+        if (get_local_id(0) < sizeof(ltasks[0]) / sizeof(int))
+            for (int ch = 0; ch < channels; ch++)
+                ((__local int*)&ltasks[ch])[get_local_id(0)] = ((__global int*)(&tasks[iFrame * channels + ch]))[get_local_id(0)];
 
-	//printf("len_utf8(%d) == %d\n", firstFrame + iFrame, len_utf8(firstFrame + iFrame));
-	offset += 15 + 1 + 4 + 4 + 4 + 3 + 1 + len_utf8(firstFrame + iFrame)
-	    // + 8-16 // custom block size
-	    // + 8-16 // custom sample rate
-	    ;
-	int bs = ltasks[0].blocksize;
-	//public static readonly int[] flac_blocksizes = new int[15] { 0, 192, 576, 1152, 2304, 4608, 0, 0, 256, 512, 1024, 2048, 4096, 8192, 16384 };	
-	offset += select(0, select(8, 16, bs >= 256), bs != 4096 && bs != 4608); // TODO: check all other standard sizes
-	
-	// assert (offset % 8) == 0
-	offset += 8;
-	if (get_local_id(0) < MAX_CHANNELS)
-	{
-	    int ch = get_local_id(0);
-	    // Add 64 bits to separate frames if header is too small so they can intersect
-	    int mylen = 8 + ltasks[ch].wbits + 64 + ltasks[ch].size;
-	    mypos[ch] = mylen;
-	    for (int offset = 1; offset < WARP_SIZE && offset < MAX_CHANNELS; offset <<= 1)
-		if (ch >= offset) mypos[ch] += mypos[ch - offset];
-	    mypos[ch] += offset;
-	    tasks[iFrame * MAX_CHANNELS + ch].data.encodingOffset = mypos[ch] - ltasks[ch].size + ltasks[ch].headerLen;
-	}
-	offset = mypos[MAX_CHANNELS - 1];
-	offset = (offset + 7) & ~7;
-	offset += 16;
+        offset += 15 + 1 + 4 + 4 + 4 + 3 + 1 + len_utf8(firstFrame + iFrame);
+        
+        // Add sample rate to frame header
+        int sample_rate_code;
+        if (sample_rate == 88200) sample_rate_code = 1;
+        else if (sample_rate == 176400) sample_rate_code = 2;
+        else if (sample_rate == 192000) sample_rate_code = 3;
+        else if (sample_rate == 8000) sample_rate_code = 4;
+        else if (sample_rate == 16000) sample_rate_code = 5;
+        else if (sample_rate == 22050) sample_rate_code = 6;
+        else if (sample_rate == 24000) sample_rate_code = 7;
+        else if (sample_rate == 32000) sample_rate_code = 8;
+        else if (sample_rate == 44100) sample_rate_code = 9;
+        else if (sample_rate == 48000) sample_rate_code = 10;
+        else if (sample_rate == 96000) sample_rate_code = 11;
+        else sample_rate_code = 0; // Unknown/get from STREAMINFO
+        
+        offset += 4; // Add 4 bits for sample rate code
+
+        int bs = ltasks[0].blocksize;
+        offset += select(0, select(8, 16, bs >= 256), bs != 4096 && bs != 4608);
+        
+        // Add bits for bit depth
+        offset += 5;
+
+        // assert (offset % 8) == 0
+        offset += 8;
+        if (get_local_id(0) < channels)
+        {
+            int ch = get_local_id(0);
+            // Add 64 bits to separate frames if header is too small so they can intersect
+            int mylen = 8 + ltasks[ch].wbits + 64 + ltasks[ch].size;
+            mypos[ch] = mylen;
+            for (int offset = 1; offset < WARP_SIZE && offset < channels; offset <<= 1)
+                if (ch >= offset) mypos[ch] += mypos[ch - offset];
+            mypos[ch] += offset;
+            tasks[iFrame * channels + ch].data.encodingOffset = mypos[ch] - ltasks[ch].size + ltasks[ch].headerLen;
+        }
+        offset = mypos[channels - 1];
+        offset = (offset + 7) & ~7;
+        offset += 16;
     }
 }
 #endif
